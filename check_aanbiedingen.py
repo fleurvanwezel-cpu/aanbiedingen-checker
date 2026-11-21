@@ -1,30 +1,15 @@
 import requests
 
-merken = [
-    "nivea",
-    "dove",
-    "rituals",
-    "andrelon"
-]
+url = "https://api.kruidvat.nl/api/v2/kvn-spa/search?fields=FULL&searchType=PRODUCT&query=nivea&lang=nl&curr=EUR"
 
-for merk in merken:
+r = requests.get(
+    url,
+    headers={
+        "User-Agent": "Mozilla/5.0"
+    }
+)
 
-    url = (
-        "https://api.kruidvat.nl/api/v2/kvn-spa/search"
-        f"?fields=FULL&searchType=PRODUCT&query={merk}"
-        "&lang=nl&curr=EUR"
-    )
-
-    data = requests.get(url).json()
-
-    for product in data["products"]:
-
-        if product.get("topPromotion"):
-
-            print(
-                product["name"],
-                "-",
-                product["price"]["formattedValue"],
-                "-",
-                product["topPromotion"]["title"]
-            )
+print("Status:", r.status_code)
+print("Content-Type:", r.headers.get("Content-Type"))
+print("Eerste 1000 tekens:")
+print(r.text[:1000])
