@@ -1,43 +1,30 @@
 import requests
-from bs4 import BeautifulSoup
 
-MERKEN = [
+merken = [
     "nivea",
     "dove",
-    "andrelon",
-    "rituals"
+    "rituals",
+    "andrelon"
 ]
 
-def controleer_kruidvat():
-    resultaten = []
+for merk in merken:
 
-    for merk in MERKEN:
+    url = (
+        "https://api.kruidvat.nl/api/v2/kvn-spa/search"
+        f"?fields=FULL&searchType=PRODUCT&query={merk}"
+        "&lang=nl&curr=EUR"
+    )
 
-        url = f"https://www.kruidvat.nl/search?text={merk}"
+    data = requests.get(url).json()
 
-        try:
-            r = requests.get(
-                url,
-                headers={
-                    "User-Agent": "Mozilla/5.0"
-                }
+    for product in data["products"]:
+
+        if product.get("topPromotion"):
+
+            print(
+                product["name"],
+                "-",
+                product["price"]["formattedValue"],
+                "-",
+                product["topPromotion"]["title"]
             )
-
-            if r.status_code == 200:
-                resultaten.append(
-                    f"Kruidvat gecontroleerd: {merk}"
-                )
-
-        except Exception as e:
-            resultaten.append(
-                f"Fout bij {merk}: {e}"
-            )
-
-    return resultaten
-
-
-if __name__ == "__main__":
-
-    resultaten = controleer_kruidvat()
-
-    print("\n".join(resultaten))
